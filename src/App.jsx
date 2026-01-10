@@ -33,7 +33,11 @@ const Layout = ({ children }) => {
     return (
         <div className="min-h-screen bg-bg text-white flex flex-col">
             {!isAuthPage && <Navbar />}
-            <main className={`flex-grow ${!isAuthPage ? '' : ''}`}>
+            {/* 
+                Mobile: pt-0 (no top bar), pb-36 (bottom nav 16 + player 20)
+                Desktop: pt-16 (top bar), pb-20 (player only)
+            */}
+            <main className={`flex-grow ${!isAuthPage ? 'pt-0 md:pt-16 pb-36 md:pb-20' : ''}`}>
                 {children}
             </main>
             {!isAuthPage && <GlobalPlayer />}

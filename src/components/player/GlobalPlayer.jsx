@@ -96,47 +96,46 @@ const GlobalPlayer = () => {
     if (!currentTrack) return null;
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 h-20 bg-black border-t border-white/10 z-50 px-6 flex items-center justify-between">
+        // Mobile: bottom-16 (above nav), Desktop: bottom-0
+        <div className="fixed bottom-16 md:bottom-0 left-0 right-0 h-20 bg-black border-t border-white/10 z-40 px-4 md:px-6 flex items-center justify-between">
 
-            {/* Track Info */}
-            <div className="flex items-center gap-4 w-1/4">
-                <div className="w-12 h-12 bg-neutral-800 rounded overflow-hidden">
+            {/* Track Info - Smaller on mobile */}
+            <div className="flex items-center gap-3 md:gap-4 flex-1 md:flex-none md:w-1/4 min-w-0">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-neutral-800 rounded overflow-hidden flex-shrink-0">
                     {currentTrack?.cover_url ? (
                         <img src={currentTrack.cover_url} alt={currentTrack.title} className="w-full h-full object-cover" />
                     ) : (
                         <div className="w-full h-full bg-gradient-to-br from-neutral-800 to-neutral-900" />
                     )}
                 </div>
-                <div className="overflow-hidden">
-                    <h4 className="font-bold text-sm text-white truncate">{currentTrack?.title || 'No Track Selected'}</h4>
-                    <p className="text-xs text-neutral-400 truncate">{currentTrack?.producer_name || currentTrack?.producer?.username || 'Select a beat to play'}</p>
+                <div className="overflow-hidden min-w-0">
+                    <h4 className="font-bold text-xs md:text-sm text-white truncate">{currentTrack?.title || 'No Track Selected'}</h4>
+                    <p className="text-[10px] md:text-xs text-neutral-400 truncate">{currentTrack?.producer_name || currentTrack?.producer?.username || 'Select a beat to play'}</p>
                 </div>
             </div>
 
-            {/* Controls */}
-            <div className="flex flex-col items-center gap-2 flex-1 max-w-xl">
-                <div className="flex items-center gap-6">
-                    <button onClick={handleBack} className="text-neutral-400 hover:text-white transition-colors">
+            {/* Controls - Centered */}
+            <div className="flex flex-col items-center gap-1 md:gap-2 flex-1 max-w-xl">
+                <div className="flex items-center gap-4 md:gap-6">
+                    <button onClick={handleBack} className="text-neutral-400 hover:text-white transition-colors hidden md:block">
                         <SkipBack size={20} />
                     </button>
                     <button
-                        className={`w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors shadow-lg shadow-red-900/40 ${!currentTrack ? 'bg-neutral-800 cursor-not-allowed text-neutral-500' : 'bg-primary hover:bg-red-600'}`}
+                        className={`w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center text-white transition-colors shadow-lg shadow-red-900/40 ${!currentTrack ? 'bg-neutral-800 cursor-not-allowed text-neutral-500' : 'bg-primary hover:bg-red-600'}`}
                         onClick={() => currentTrack && togglePlay()}
                         disabled={!currentTrack}
                     >
-                        {isPlaying ? <Pause size={20} fill="white" /> : <Play size={20} fill="white" className="ml-1" />}
+                        {isPlaying ? <Pause size={18} fill="white" /> : <Play size={18} fill="white" className="ml-0.5" />}
                     </button>
-                    <button onClick={playNext} className="text-neutral-400 hover:text-white transition-colors">
+                    <button onClick={playNext} className="text-neutral-400 hover:text-white transition-colors hidden md:block">
                         <SkipForward size={20} />
                     </button>
                 </div>
 
-                {/* Progress Bar & Time */}
-                <div className="w-full flex items-center gap-3 text-xs font-medium text-neutral-400">
+                {/* Progress Bar & Time - Hidden on small mobile, shown on larger */}
+                <div className="hidden sm:flex w-full items-center gap-3 text-xs font-medium text-neutral-400">
                     <span className="w-10 text-right">{formatTime(currentTime)}</span>
 
-                    {/* Native Range Input for better drag feeling if supported, or custom div logic */}
-                    {/* User asked for onChange drag-and-drop. Native range is best for this. */}
                     <input
                         type="range"
                         min="0"
@@ -156,8 +155,8 @@ const GlobalPlayer = () => {
                 </div>
             </div>
 
-            {/* Volume & Extras */}
-            <div className="flex items-center justify-end gap-4 w-1/4">
+            {/* Volume & Extras - Hidden on mobile */}
+            <div className="hidden md:flex items-center justify-end gap-4 w-1/4">
                 <div className="flex items-center group gap-2">
                     <Volume2 size={20} className="text-neutral-400" />
                     <input
@@ -180,3 +179,4 @@ const GlobalPlayer = () => {
 };
 
 export default GlobalPlayer;
+
