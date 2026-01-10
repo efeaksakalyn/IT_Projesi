@@ -149,12 +149,6 @@ const Profile = () => {
         if (myProfile || paramId) {
             fetchProfileData();
         }
-
-        const handleFocus = () => {
-            if (myProfile || paramId) fetchProfileData();
-        };
-        window.addEventListener('focus', handleFocus);
-        return () => window.removeEventListener('focus', handleFocus);
     }, [paramId, myProfile, isOwnProfile, user]);
 
     const handleFollow = async () => {

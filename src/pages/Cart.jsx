@@ -14,10 +14,6 @@ const Cart = () => {
 
     useEffect(() => {
         fetchCart();
-
-        const handleFocus = () => fetchCart();
-        window.addEventListener('focus', handleFocus);
-        return () => window.removeEventListener('focus', handleFocus);
     }, [user]);
 
     const fetchCart = async () => {

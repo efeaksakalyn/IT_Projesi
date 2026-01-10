@@ -94,11 +94,6 @@ const Inbox = () => {
         };
 
         fetchConversations();
-
-        // Focus listener for wake-up
-        const handleFocus = () => fetchConversations();
-        window.addEventListener('focus', handleFocus);
-        return () => window.removeEventListener('focus', handleFocus);
     }, [user, navigate]);
 
     if (loading) return <div className="pt-24 flex justify-center"><Loader2 className="animate-spin text-primary" size={40} /></div>;

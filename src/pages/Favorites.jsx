@@ -13,14 +13,19 @@ const Favorites = () => {
         const fetchFavorites = async () => {
             if (!user) return;
             setLoading(true);
-            const { data } = await supabase
-                .from('favorites')
-                .select('*, beat:beats(*)')
-                .eq('user_id', user.id);
+            try {
+                const { data } = await supabase
+                    .from('favorites')
+                    .select('*, beat:beats(*)')
+                    .eq('user_id', user.id);
 
-            const beats = data?.map(f => f.beat).filter(Boolean) || [];
-            setFavorites(beats);
-            setLoading(false);
+                const beats = data?.map(f => f.beat).filter(Boolean) || [];
+                setFavorites(beats);
+            } catch (error) {
+                console.error("Favorites fetch error:", error);
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchFavorites();

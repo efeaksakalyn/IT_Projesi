@@ -88,12 +88,8 @@ const Explore = () => {
             fetchBeats();
         }, 500);
 
-        const handleFocus = () => fetchBeats();
-        window.addEventListener('focus', handleFocus);
-
         return () => {
             clearTimeout(timeout);
-            window.removeEventListener('focus', handleFocus);
         };
     }, [filters]);
 

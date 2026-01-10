@@ -89,11 +89,6 @@ const Dashboard = () => {
         };
 
         fetchData();
-
-        // Focus listener
-        const handleFocus = () => fetchData();
-        window.addEventListener('focus', handleFocus);
-        return () => window.removeEventListener('focus', handleFocus);
     }, [user, navigate]);
 
     const handleWithdraw = async () => {

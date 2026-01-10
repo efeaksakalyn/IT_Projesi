@@ -123,18 +123,10 @@ const ChatDetail = () => {
                 console.log(`[Realtime] Subscription status: ${status}`);
             });
 
-        // Tab focus listener - refetch on return
-        const onTabFocus = () => {
-            console.log('[Focus] Tab regained focus, refetching...');
-            fetchChatData();
-        };
-        window.addEventListener('focus', onTabFocus);
-
         // Cleanup
         return () => {
             console.log('[Cleanup] Removing realtime channel');
             supabase.removeChannel(realtimeChannel);
-            window.removeEventListener('focus', onTabFocus);
         };
     }, [conversationId, user, navigate]);
 

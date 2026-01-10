@@ -107,21 +107,6 @@ const Chat = () => {
         };
     }, [id, user, navigate]);
 
-    // Wake up listener
-    useEffect(() => {
-        const handleFocus = () => {
-            // Re-fetch messages if needed, or rely on realtime. 
-            // Simplest is to force a re-mount or re-fetch.
-            // We can just call scrollToBottom to be safe or re-verify.
-            // Ideally we refetch the last few messages.
-        };
-        // For Chat, Realtime handles most. But let's add it for safety if connection drops.
-        window.addEventListener('focus', () => {
-            // We could trigger a re-fetch here if we extracted fetchData
-        });
-        return () => window.removeEventListener('focus', () => { });
-    }, []);
-
     useEffect(() => {
         scrollToBottom();
     }, [messages]);

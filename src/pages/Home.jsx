@@ -24,33 +24,38 @@ const Home = () => {
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
-            // Fetch latest beats (only visible ones)
-            const { data: latest } = await supabase
-                .from('beats')
-                .select('*')
-                .eq('is_visible', true)  // fix8.sql visibility filter
-                .order('created_at', { ascending: false })
-                .limit(4);
+            try {
+                // Fetch latest beats (only visible ones)
+                const { data: latest } = await supabase
+                    .from('beats')
+                    .select('*')
+                    .eq('is_visible', true)  // fix8.sql visibility filter
+                    .order('created_at', { ascending: false })
+                    .limit(4);
 
-            // Fetch trending (most plays - only visible ones)
-            const { data: trending } = await supabase
-                .from('beats')
-                .select('*')
-                .eq('is_visible', true)  // fix8.sql visibility filter
-                .order('plays_count', { ascending: false })
-                .limit(4);
+                // Fetch trending (most plays - only visible ones)
+                const { data: trending } = await supabase
+                    .from('beats')
+                    .select('*')
+                    .eq('is_visible', true)  // fix8.sql visibility filter
+                    .order('plays_count', { ascending: false })
+                    .limit(4);
 
-            // Fetch featured artists (producers)
-            const { data: artists } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('is_producer', true)
-                .limit(6);
+                // Fetch featured artists (producers)
+                const { data: artists } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('is_producer', true)
+                    .limit(6);
 
-            if (latest) setFeaturedBeats(latest);
-            if (trending) setTrendingBeats(trending);
-            if (artists) setFeaturedArtists(artists);
-            setLoading(false);
+                if (latest) setFeaturedBeats(latest);
+                if (trending) setTrendingBeats(trending);
+                if (artists) setFeaturedArtists(artists);
+            } catch (error) {
+                console.error("Home fetch error:", error);
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchData();
