@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: #FF0000;
+    --color-bg: #0a0a0a;
+    --color-surface: #121212;
+    --color-text: #ffffff;
+    --font-heading: 'Outfit', sans-serif;
+    --font-body: 'Inter', sans-serif;
+  }
+  
+  body {
+    @apply bg-black text-white font-sans antialiased overflow-x-hidden;
+    background-color: var(--color-bg);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-[#FF0000] text-white font-bold py-2 px-6 rounded hover:bg-red-700 transition-colors duration-300;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+  }
+  
+  .card-hover {
+    @apply transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-red-900/20;
+  }
+
+  .input-field {
+    @apply bg-neutral-900 border border-neutral-800 rounded px-4 py-2 text-white focus:outline-none focus:border-[#FF0000] transition-colors w-full;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #000; 
+}
+::-webkit-scrollbar-thumb {
+  background: #333; 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #FF0000; 
+}
