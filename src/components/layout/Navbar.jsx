@@ -42,7 +42,7 @@ const Navbar = () => {
                             <NavIcon to="/cart" icon={<ShoppingCart size={20} />} />
                             <NavIcon to="/inbox" icon={<MessageSquare size={20} />} />
                             <NavIcon to={`/profile/${user?.id}`} icon={<User size={20} />} />
-                            <button onClick={useAuthStore.getState().signOut} className="p-2 text-neutral-400 hover:text-white hover:bg-white/10 rounded-full transition-all" title="Log Out">
+                            <button onClick={useAuthStore.getState().logout} className="p-2 text-neutral-400 hover:text-white hover:bg-white/10 rounded-full transition-all" title="Log Out">
                                 <LogOut size={20} />
                             </button>
                         </>
@@ -63,6 +63,7 @@ const Navbar = () => {
                 {user ? (
                     <>
                         <MobileNavIcon to="/cart" icon={<ShoppingCart size={22} />} label="Cart" active={isActive('/cart')} />
+                        <MobileNavIcon to="/inbox" icon={<MessageSquare size={22} />} label="Inbox" active={isActive('/inbox')} />
                         <MobileNavIcon to={`/profile/${user?.id}`} icon={<User size={22} />} label="Profile" active={isActive('/profile')} />
                     </>
                 ) : (

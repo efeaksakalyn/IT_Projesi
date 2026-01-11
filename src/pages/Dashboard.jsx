@@ -10,7 +10,7 @@ const Dashboard = () => {
     const { user, profile, fetchProfile } = useAuthStore();
     const [sales, setSales] = useState([]);
     const [transactions, setTransactions] = useState([]);
-    const [myBeats, setMyBeats] = useState([]);  // Producer's beats for management
+    const [myBeats, setMyBeats] = useState([]);
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({ totalEarnings: 0, totalSales: 0, balance: 0 });
 

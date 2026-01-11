@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import useAuthStore from '../stores/useAuthStore';
 import BeatCard from '../components/beats/BeatCard';
-import { Loader2, Settings as SettingsIcon, MessageSquare, Instagram, Globe } from 'lucide-react';
+import { Loader2, Settings as SettingsIcon, MessageSquare, Instagram, Globe, LayoutDashboard, LogOut } from 'lucide-react';
 
 const Profile = () => {
     const { id, username } = useParams();
@@ -296,11 +296,22 @@ const Profile = () => {
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-4 mt-6">
+                <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
                     {isOwnProfile ? (
-                        <Link to="/settings" className="btn-secondary flex items-center gap-2 text-sm border border-white/10 px-4 py-2 rounded hover:bg-white/5 transition-colors">
-                            <SettingsIcon size={16} /> Edit Profile
-                        </Link>
+                        <>
+                            <Link to="/settings" className="flex items-center gap-2 text-sm border border-white/10 px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
+                                <SettingsIcon size={16} /> Edit Profile
+                            </Link>
+                            <Link to="/dashboard" className="flex items-center gap-2 text-sm bg-primary/20 border border-primary/30 text-primary px-4 py-2 rounded-lg hover:bg-primary/30 transition-colors">
+                                <LayoutDashboard size={16} /> Dashboard
+                            </Link>
+                            <button
+                                onClick={useAuthStore.getState().logout}
+                                className="flex items-center gap-2 text-sm border border-red-500/30 text-red-500 px-4 py-2 rounded-lg hover:bg-red-500/10 transition-colors"
+                            >
+                                <LogOut size={16} /> Log Out
+                            </button>
+                        </>
                     ) : (
                         <>
                             <button

@@ -1,6 +1,12 @@
 import { create } from 'zustand';
 import { supabase } from '../lib/supabase';
 
+/**
+ * Auth Store - INSTANT Release Pattern
+ * 
+ * Sets loading=false THE MOMENT we know if user exists or not
+ * Profile loads in BACKGROUND - never blocks the UI
+ */
 const useAuthStore = create((set, get) => ({
     user: null,
     profile: null,
@@ -11,51 +17,49 @@ const useAuthStore = create((set, get) => ({
     setLoading: (loading) => set({ loading }),
 
     initializeAuth: async () => {
-        set({ loading: true });
-        try {
-            const { data: { session } } = await supabase.auth.getSession();
+        console.log('🟢 AUTH: Starting initialization...');
 
-            if (session?.user) {
-                set({ user: session.user });
-
-                // Fetch profile
-                const { data: profileData } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', session.user.id)
-                    .single();
-
-                if (profileData) {
-                    set({ profile: profileData });
-                }
-            } else {
-                set({ user: null, profile: null });
-            }
-        } catch (error) {
-            console.error('Auth initialization error:', error);
-            set({ user: null, profile: null });
-        } finally {
-            set({ loading: false });
-        }
-
-        // Listen for auth changes
+        // Set up auth state change listener
         supabase.auth.onAuthStateChange(async (event, session) => {
-            if (event === 'SIGNED_IN' && session?.user) {
-                set({ user: session.user });
+            console.log('🟡 AUTH: Event:', event);
 
-                const { data: profileData } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', session.user.id)
-                    .single();
+            // INSTANT RELEASE: Set loading=false immediately when we know session state
+            if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+                if (session?.user) {
+                    console.log('🟢 AUTH: User confirmed:', session.user.email);
+                    set({ user: session.user, loading: false }); // INSTANT - user is ready
 
-                if (profileData) {
-                    set({ profile: profileData });
+                    // Load profile in BACKGROUND - don't block UI
+                    supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', session.user.id)
+                        .single()
+                        .then(({ data }) => {
+                            if (data) {
+                                set({ profile: data });
+                                console.log('🟢 AUTH: Profile loaded (background)');
+                            }
+                        })
+                        .catch(e => console.error('Profile fetch error:', e));
+                } else {
+                    console.log('🟡 AUTH: No user (signed out or no session)');
+                    set({ user: null, profile: null, loading: false }); // INSTANT
                 }
-            } else if (event === 'SIGNED_OUT') {
-                set({ user: null, profile: null });
+            } else if (event === 'TOKEN_REFRESHED') {
+                // Silent, no action needed
+                console.log('🟡 AUTH: Token refreshed');
             }
         });
+
+        // TIGHT Safety net: 1.5 seconds max wait
+        setTimeout(() => {
+            const state = get();
+            if (state.loading) {
+                console.log('⚠️ AUTH: 1.5s timeout - forcing loading=false');
+                set({ loading: false });
+            }
+        }, 1500);
     },
 
     login: async (email, password) => {
@@ -63,23 +67,7 @@ const useAuthStore = create((set, get) => ({
             email,
             password
         });
-
         if (error) throw error;
-
-        if (data.user) {
-            set({ user: data.user });
-
-            const { data: profileData } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', data.user.id)
-                .single();
-
-            if (profileData) {
-                set({ profile: profileData });
-            }
-        }
-
         return data;
     },
 
@@ -87,41 +75,17 @@ const useAuthStore = create((set, get) => ({
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
-            options: {
-                data: { username }
-            }
+            options: { data: { username } }
         });
-
         if (error) throw error;
 
         if (data.user) {
-            // Create profile
-            const { error: profileError } = await supabase
-                .from('profiles')
-                .insert({
-                    id: data.user.id,
-                    username: username,
-                    email: email
-                });
-
-            if (profileError) {
-                console.error('Profile creation error:', profileError);
-            }
-
-            set({ user: data.user });
-
-            // Fetch created profile
-            const { data: profileData } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', data.user.id)
-                .single();
-
-            if (profileData) {
-                set({ profile: profileData });
-            }
+            await supabase.from('profiles').insert({
+                id: data.user.id,
+                username: username,
+                email: email
+            });
         }
-
         return data;
     },
 
@@ -134,15 +98,13 @@ const useAuthStore = create((set, get) => ({
         const user = get().user;
         if (!user) return;
 
-        const { data: profileData } = await supabase
+        const { data } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', user.id)
             .single();
 
-        if (profileData) {
-            set({ profile: profileData });
-        }
+        if (data) set({ profile: data });
     }
 }));
 

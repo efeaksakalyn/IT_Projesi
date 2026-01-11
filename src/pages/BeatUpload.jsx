@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import useAuthStore from '../stores/useAuthStore';
 import { Upload, Loader2, DollarSign, Music } from 'lucide-react';
@@ -8,6 +8,13 @@ const BeatUpload = () => {
     const { user } = useAuthStore();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+
+    // Auth guard - redirect to login if not logged in
+    useEffect(() => {
+        if (!user) {
+            navigate('/login');
+        }
+    }, [user, navigate]);
     const [formData, setFormData] = useState({
         title: '',
         bpm: '', // int
@@ -187,7 +194,7 @@ const BeatUpload = () => {
                     <textarea name="description" className="input-field h-24 resize-none" placeholder="Tell us about the track..." onChange={handleChange}></textarea>
                 </div>
 
-                <button type="submit" disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2">
+                <button type="submit" disabled={loading || !user} className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                     {loading ? <Loader2 className="animate-spin" /> : 'Publish Beat'}
                 </button>
 
