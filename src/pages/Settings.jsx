@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import useAuthStore from '../stores/useAuthStore';
-import { Loader2, Save } from 'lucide-react';
+import { Loader2, Save, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Settings = () => {
-    const { user, profile } = useAuthStore();
+    const { user, profile, refreshProfile, logout } = useAuthStore();
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         username: '',
@@ -58,12 +60,20 @@ const Settings = () => {
                 setPassword('');
             }
 
+            // Refresh the profile in the store so changes appear immediately
+            await refreshProfile();
+
             alert('Profile updated successfully!');
         } catch (err) {
             alert('Error updating profile: ' + err.message);
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleLogout = async () => {
+        await logout();
+        navigate('/');
     };
 
     return (
@@ -123,6 +133,14 @@ const Settings = () => {
 
                 <button type="submit" disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2">
                     {loading ? <Loader2 className="animate-spin" /> : <><Save size={18} /> Save Changes</>}
+                </button>
+
+                <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg border border-red-500/30 text-red-500 hover:bg-red-500/10 transition-colors font-medium"
+                >
+                    <LogOut size={18} /> Log Out
                 </button>
 
             </form>

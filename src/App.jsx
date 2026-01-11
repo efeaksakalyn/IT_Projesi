@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import GlobalPlayer from './components/player/GlobalPlayer';
 import useAuthStore from './stores/useAuthStore';
+import { supabase } from './lib/supabase';
 import { Loader2 } from 'lucide-react';
 
 // Pages
@@ -22,6 +23,27 @@ import ChatResolver from './pages/chat/ChatResolver';
 import Settings from './pages/Settings';
 import Dashboard from './pages/Dashboard';
 
+// Global logout redirect handler
+const LogoutRedirector = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+            if (event === 'SIGNED_OUT') {
+                // Only redirect if not already on home or auth pages
+                if (location.pathname !== '/' && location.pathname !== '/login' && location.pathname !== '/signup') {
+                    navigate('/');
+                }
+            }
+        });
+
+        return () => subscription.unsubscribe();
+    }, [navigate, location.pathname]);
+
+    return null;
+};
+
 // Layout Wrapper
 const Layout = ({ children }) => {
     const location = useLocation();
@@ -29,6 +51,7 @@ const Layout = ({ children }) => {
 
     return (
         <div className="min-h-screen bg-bg text-white flex flex-col">
+            <LogoutRedirector />
             {!isAuthPage && <Navbar />}
             {/* 
                 Mobile: pt-0 (no top bar), pb-36 (bottom nav 16 + player 20)
