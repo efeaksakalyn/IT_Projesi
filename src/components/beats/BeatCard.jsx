@@ -14,6 +14,7 @@ const BeatCard = ({ beat, beatList = [] }) => {
     const [isLiked, setIsLiked] = useState(false);
     const [isOwned, setIsOwned] = useState(false);  // True if user has purchased this beat
     const [isSoldOut, setIsSoldOut] = useState(false);  // True if license_type='Exclusive' exists
+    const [producerUsername, setProducerUsername] = useState(null);
 
     // Update local state if prop changes
     useEffect(() => {
@@ -62,6 +63,18 @@ const BeatCard = ({ beat, beatList = [] }) => {
                     .eq('license_type', 'Exclusive')
                     .single();
                 setIsSoldOut(!!exclusiveSale);
+
+                // Fetch producer username
+                if (beat.producer_id) {
+                    const { data: producerData } = await supabase
+                        .from('profiles')
+                        .select('username')
+                        .eq('id', beat.producer_id)
+                        .single();
+                    if (producerData) {
+                        setProducerUsername(producerData.username);
+                    }
+                }
             } catch (err) {
                 // Ignore single() errors for no rows
             }
@@ -206,6 +219,15 @@ const BeatCard = ({ beat, beatList = [] }) => {
                 <Link to={`/beats/${beat.id}`}>
                     <h3 className="font-bold text-white truncate hover:text-primary transition-colors">{beat.title}</h3>
                 </Link>
+                {producerUsername && (
+                    <Link
+                        to={`/profile/${beat.producer_id}`}
+                        className="text-sm text-primary hover:text-red-400 transition-colors truncate block"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {producerUsername}
+                    </Link>
+                )}
                 <div className="flex items-center justify-between mt-1">
                     <p className="text-sm text-neutral-400 truncate flex items-center gap-2">
                         {beat.bpm} BPM <span className="w-1 h-1 bg-neutral-600 rounded-full" /> {beat.key}
