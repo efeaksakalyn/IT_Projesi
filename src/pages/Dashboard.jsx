@@ -182,7 +182,7 @@ const Dashboard = () => {
 
     /**
      * Hard Delete Beat with Storage Cleanup
-     * Removes audio from beat-files, image from cover-arts, then database record
+     * Removes related records, audio from beat-files, image from cover-arts, then database record
      */
     const deleteBeatPermanently = async (beat) => {
         const confirmed = window.confirm(
@@ -195,23 +195,29 @@ const Dashboard = () => {
         setMyBeats(prev => prev.filter(b => b.id !== beat.id));
 
         try {
-            // 1. Delete audio from storage
+            // 1. Delete related records first (to avoid foreign key constraints)
+            await supabase.from('comments').delete().eq('beat_id', beat.id);
+            await supabase.from('favorites').delete().eq('beat_id', beat.id);
+            await supabase.from('cart_items').delete().eq('beat_id', beat.id);
+            await supabase.from('view_logs').delete().eq('beat_id', beat.id);
+
+            // 2. Delete audio from storage (ignore errors)
             if (beat.audio_url) {
                 const audioPath = beat.audio_url.split('/beat-files/')[1];
                 if (audioPath) {
-                    await supabase.storage.from('beat-files').remove([decodeURIComponent(audioPath)]);
+                    await supabase.storage.from('beat-files').remove([decodeURIComponent(audioPath)]).catch(() => { });
                 }
             }
 
-            // 2. Delete cover from storage
+            // 3. Delete cover from storage (ignore errors)
             if (beat.cover_url) {
                 const coverPath = beat.cover_url.split('/cover-arts/')[1];
                 if (coverPath) {
-                    await supabase.storage.from('cover-arts').remove([decodeURIComponent(coverPath)]);
+                    await supabase.storage.from('cover-arts').remove([decodeURIComponent(coverPath)]).catch(() => { });
                 }
             }
 
-            // 3. Delete database record
+            // 4. Delete database record
             const { error } = await supabase.from('beats').delete().eq('id', beat.id);
 
             if (error) throw error;
@@ -221,7 +227,7 @@ const Dashboard = () => {
             console.error('Delete error:', error);
             // Restore to UI on error
             setMyBeats(prev => [...prev, beat]);
-            alert('Failed to delete beat. Please try again.');
+            alert('Failed to delete beat: ' + error.message);
         }
     };
 

@@ -432,15 +432,15 @@ const BeatDetail = () => {
                         <ul className="space-y-3 text-sm text-neutral-400">
                             <li className="flex justify-between items-center">
                                 <span>MP3 Lease</span>
-                                <span className="text-white font-bold">{formatPrice(beat.price, beat.currency)}</span>
+                                <span className="text-white font-bold">{formatPrice(beat.price || 19.99, beat.currency || 'USD')}</span>
                             </li>
                             <li className="flex justify-between items-center">
                                 <span>WAV Lease</span>
-                                <span className="text-white font-bold">{formatPrice(beat.price * 1.5, beat.currency)}</span>
+                                <span className="text-white font-bold">{formatPrice(beat.price_wav || 29.99, beat.currency || 'USD')}</span>
                             </li>
                             <li className="flex justify-between items-center">
                                 <span>Exclusive</span>
-                                <span className="text-white font-bold">{formatPrice(beat.price * 10, beat.currency)}</span>
+                                <span className="text-white font-bold">{formatPrice(beat.price_exclusive || 149.99, beat.currency || 'USD')}</span>
                             </li>
                         </ul>
                     </div>
