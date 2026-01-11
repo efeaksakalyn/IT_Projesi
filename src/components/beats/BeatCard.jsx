@@ -233,6 +233,13 @@ const BeatCard = ({ beat, beatList = [] }) => {
                         {beat.bpm} BPM <span className="w-1 h-1 bg-neutral-600 rounded-full" /> {beat.key}
                     </p>
                 </div>
+                {beat.genre && (
+                    <div className="mt-2">
+                        <span className="text-xs bg-white/5 text-neutral-300 px-2 py-1 rounded-full border border-white/10">
+                            {beat.genre}
+                        </span>
+                    </div>
+                )}
 
                 {/* Public Stats Bar */}
                 <div className="flex items-center gap-4 mt-3 pb-3 border-b border-white/5 text-xs text-neutral-500 font-medium">

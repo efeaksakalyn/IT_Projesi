@@ -62,8 +62,12 @@ const GlobalPlayer = () => {
     const handleBack = () => {
         // If current time > 3s, reset to 0. Else go prev.
         if (audioRef.current.currentTime > 3) {
+            // Set dragging flag to prevent timeupdate from overwriting during seek
+            setIsDragging(true);
             audioRef.current.currentTime = 0;
             setCurrentTime(0);
+            // Release flag after a short delay to let the audio catch up
+            setTimeout(() => setIsDragging(false), 100);
         } else {
             playPrev();
         }
